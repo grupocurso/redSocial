@@ -1,24 +1,6 @@
-# README
+## Red Social
+Primero iniciamos creando el proyecto con el comando ```rails new social-red --database=postgresql```.
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Una vez creado el proyecto pasaremos a crear y migrar la base de datos que usara nuestra aplicación ```rails db:create db:migrate```.
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Para verificar que todo funciono ejecutamos el servicio ```rails s```
