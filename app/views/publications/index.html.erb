@@ -4,4 +4,6 @@
     <%= publication.like %>
     <%= publication.view %>
     <br>
+    <%= link_to 'Edit', edit_publication_path(publication) %>
+    <%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
 <% end %>

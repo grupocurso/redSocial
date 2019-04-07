@@ -210,3 +210,65 @@ Ahora pasaremos a leer la información
 
 * !Listo¡, ahora probamos el funcionamiento.
 
+### UPDATE
+Ahora desarrollaremos el metodo de Update para las publicaciones:
+
+* Agregamos un link que nos enviara a la edicion de la información.
+
+**index.html.erb**
+```html
+<%= link_to 'Edit', edit_publication_path(publication) %><br>
+```
+
+* Definimos edit en el controlador y el metodo update para que pueda actualizarse
+**publications_controller.rb**
+```rb
+    def edit
+        @publication = Publication.find params[:id]
+    end
+    def update
+        @publication = Publication.find params[:id]
+        @publication.update publication_params
+        redirect_to @publication
+    end
+```
+
+* Ahora creamos el archivo que sera la vista con el formulario para editar.
+
+**edit.html.erb**
+```html
+<h3>Editar</h3>
+<%= form_for @publication do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.submit %>
+<% end %>
+```
+
+### Destroy
+Ahora pasaremos a crear el metodo para destruir/eliminar una publicacion
+
+* Para destruir una publicación primero agregamos el link que llamara al metodo, agregamos una confirmación para llamar al metodo.
+
+**index.html.erb**
+```html
+<% @publications.each do |publication| %> <!-- un ciclo para leer toda la información -->
+    <%= publication.description %>
+    <br>
+    <%= publication.like %>
+    <%= publication.view %>
+    <br>
+    <%= link_to 'Edit', edit_publication_path(publication) %>
+    <%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% end %>
+```
+* Agregamos el metodo **destroy** al controlador.
+
+**publications_controller.rb**
+```rb
+    def destroy
+        @publication.destroy
+        redirect_to publications_path
+    end
+```
