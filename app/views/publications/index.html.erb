@@ -1,1 +1,7 @@
-Hola mundo :D
+<% @publications.each do |publication| %> <!-- un ciclo para leer toda la información -->
+    <%= publication.description %>
+    <br>
+    <%= publication.like %>
+    <%= publication.view %>
+    <br>
+<% end %>

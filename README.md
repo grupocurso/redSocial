@@ -51,3 +51,162 @@ end
 Hola mundo :D
 ```
 *   Ahora para poder verificar que todo funciona bien ejecutaremos el servidor ```rails s``` y accederemos a la ruta ```http://localhost:3000/publications```.
+
+## CRUD - Mantenimiento
+
+Ahora se desarrollara el CRUD o mantenimiento para nuestro modelo, iniciaremos por **crear** información.
+
+### Create
+* Primero definiremos la ruta para **new**
+
+**publications_controller.rb**
+```rb
+class PublicationsController < ApplicationController
+    def new
+    end
+end
+```
+* Ya tenemos el acceso a la ruta **publications/new**, pero nos falta la vista para dicha ruta, en esta estara nuestro formulario asi que lo agregamos, para el formulario se usara **form_helper**.
+
+**new.html.erb**
+```html
+<h3>Publicar</h3>
+
+<%= form_for :publication, url: publications_path do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.label :like %> <br>
+    <%= f.number_field :like %>
+    <br>
+    <%= f.label :view %> <br>
+    <%= f.number_field :view %>
+    <br>
+    <%= f.submit %>
+<% end %>
+```
+**Nota:** Podras encontrar mas información sobre el uso de form_helper [aqui](https://guides.rubyonrails.org/form_helpers.html).
+
+* Ya tenemos el formulario de la información que vamos a enviar, ahora definiremos la accion **create** para guardar la información.
+
+**publications_controller.rb**
+```rb
+class PublicationsController < ApplicationController
+    def new
+    end
+    def create
+        @publication = Publication.new 
+        @publication.save
+    end
+end
+```
+
+* Ahora si corremos el servicio y probamos el funcionamiento no tendremos ningun error, pero si checamos la información en nuestra base de datos no mostrara nada, la información que se guardo esta vacia, esto se debe a que no le hemos dado permiso para guardar la información recibida, para eso definiremos una variable como parametro de la información recibida que podra guardar y la agregamos cuando se crea la nueva publicación.
+
+**publications_controller.rb**
+```rb
+class PublicationsController < ApplicationController
+    def new
+    end
+    def create
+        @publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication.save
+    end
+    private #Para definir los parametros requeridos/permitidos
+    def publication_params
+        params.require(:publication).permit :description, :like, :view
+    end
+end
+```
+
+* ¡Listo!, probamos que la información se guarde.
+
+* Tambien se puede definir valores determinados para la información que se guardara. 
+
+**publications_controller.rb**
+```rb
+class PublicationsController < ApplicationController
+    def new
+    end
+    def create
+        @publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication.like = 0
+        @publication.view = 0
+        @publication.save #Se guardan los parametros enviados
+        redirect_to @publication
+    end
+    private #Para definir los parametros requeridos/permitidos
+    def publication_params
+        params.require(:publication).permit :description, :like, :view
+    end
+end
+```
+
+**new.html.erb**
+```html
+<h3>Publicar</h3>
+
+<%= form_for :publication, url: publications_path do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.submit %>
+<% end %>
+```
+### READ
+Ahora pasaremos a leer la información
+* Definimos la ruta **publications/id_dato** esto se define en el controlador como **show**
+
+**publications_controller.rb**
+```rb
+    def show
+        @publication = Publication.find params[:id] #Hace una busqueda del dato, por su id para mostrarlo
+    end
+```
+
+* Agregamos la vista para dicha ruta
+**show.html.erb**
+```html
+<%= @publication.description %>
+<br>
+<%= @publication.like %>
+<%= @publication.view %>
+```
+
+* Ahora podemos acceder a dicha información ejemplo seria **localhost:3000/publications/1**, pero vamos a direccionar la creacion del dato a la vista para dicho dato.
+
+**publications_controller.rb**
+```rb
+    def create
+        @publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication.like = 0
+        @publication.view = 0
+        @publication.save #Se guardan los parametros enviados
+        redirect_to @publication
+    end
+```
+
+* Ahora crearemos una vista para ver todos los elementos, definimos entonces dicha vista, la pondremos en index que seria la ruta **/publications**.
+
+**publications_controller.rb
+```rb
+    def index
+        @publications = Publication.all #Hace un pedido de todos los datos.
+    end
+```
+
+* La vista para mostrar toda esa información
+
+**index.html.erb**
+```html
+<% @publications.each do |publication| %> <!-- un ciclo para leer toda la información -->
+    <%= publication.description %>
+    <br>
+    <%= publication.like %>
+    <%= publication.view %>
+    <br>
+<% end %>
+```
+
+* !Listo¡, ahora probamos el funcionamiento.
+

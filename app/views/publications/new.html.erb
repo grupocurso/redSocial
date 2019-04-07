@@ -1,0 +1,8 @@
+<h3>Publicar</h3>
+
+<%= form_for :publication, url: publications_path do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.submit %>
+<% end %>
