@@ -1,0 +1,12 @@
+<% if @publication.errors.any? %>
+    <div>
+        <h4>¡Oh No!</h4>
+        <b><p>Algo ha ocurrido</p></b>
+    </div>
+<% end %>
+<%= form_for @publication do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.submit %>
+<% end %>

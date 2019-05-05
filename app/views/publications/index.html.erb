@@ -1,9 +1,1 @@
-<% @publications.each do |publication| %> <!-- un ciclo para leer toda la información -->
-    <%= publication.description %>
-    <br>
-    <%= publication.like %>
-    <%= publication.view %>
-    <br>
-    <%= link_to 'Edit', edit_publication_path(publication) %>
-    <%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
-<% end %>
+<%= render @publications %>

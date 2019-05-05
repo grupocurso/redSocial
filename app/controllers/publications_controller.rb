@@ -1,12 +1,15 @@
 class PublicationsController < ApplicationController
     def new
+        @publication = Publication.new
     end
     def create
         @publication = Publication.new publication_params #Se almacenan los parametros enviados
         @publication.like = 0
         @publication.view = 0
-        @publication.save #Se guardan los parametros enviados
-        redirect_to @publication
+        if @publication.save #Se guardan los parametros enviados
+            return redirect_to @publication
+        end
+        render 'new'
     end
     def show
         @publication = Publication.find params[:id] #Hace una busqueda del dato, por su id para mostrarlo
@@ -19,8 +22,11 @@ class PublicationsController < ApplicationController
     end
     def update
         @publication = Publication.find params[:id]
-        @publication.update publication_params
-        redirect_to @publication
+        if @publication.update publication_params
+            return redirect_to @publication
+        end
+        render 'edit'
+
     end
     def destroy
         @publication = Publication.find params[:id]
