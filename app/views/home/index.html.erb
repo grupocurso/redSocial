@@ -1,0 +1,7 @@
+
+<% if user_signed_in? %>
+    <h1>Bienvenido</h1>
+    <b><%= current_user.email %></b>
+<% else %>
+    <h1> Necesitas registrarte o iniciar sesión</h1>
+<% end %>

@@ -3,7 +3,8 @@ class PublicationsController < ApplicationController
         @publication = Publication.new
     end
     def create
-        @publication = Publication.new publication_params #Se almacenan los parametros enviados
+        #@publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication = current_user.publications.new publication_params
         @publication.like = 0
         @publication.view = 0
         if @publication.save #Se guardan los parametros enviados
@@ -12,10 +13,12 @@ class PublicationsController < ApplicationController
         render 'new'
     end
     def show
-        @publication = Publication.find params[:id] #Hace una busqueda del dato, por su id para mostrarlo
+        #@publication = Publication.find params[:id] #Hace una busqueda del dato, por su id para mostrarlo
+        @publication = Publication.where({user_id: current_user.id, id: params[:id]})
     end
     def index
-        @publications = Publication.all
+        #@publications = Publication.all
+        @publications = Publication.where user_id: current_user.id
     end
     def edit
         @publication = Publication.find params[:id]
