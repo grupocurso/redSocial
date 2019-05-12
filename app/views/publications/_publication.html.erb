@@ -1,7 +1,9 @@
-<%= publication.description %>
-<br>
-<%= publication.like %>
-<%= publication.view %>
-<br>
-<%= link_to 'Edit', edit_publication_path(publication) %>
-<%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% publications.each do |publication| %>
+    <%= publication.description %>
+    <br>
+    <%= publication.like %>
+    <%= publication.view %>
+    <br>
+    <%= link_to 'Edit', edit_publication_path(publication) %>
+    <%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% end %>

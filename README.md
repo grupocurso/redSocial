@@ -272,3 +272,75 @@ Ahora pasaremos a crear el metodo para destruir/eliminar una publicacion
         redirect_to publications_path
     end
 ```
+## Parciales
+Una buena practica para el desarrollo en Ruby on Rails son la creacion de parciales, puedes verlos como modulos para la vista.
+Esto nos servira para evitar el codigo repetido en las vistas. Ejemplo para este proyecto son la vista de la información de las publicaciones y el formulario para crear y actualizar la información.
+
+*   Bien ahora pasaremos a crear un parcial, primero para la vista de la información, el nombre de los parciales inician con un "_", en la carpeta de vistas del controlador creamos el parcial.
+
+**_publication.html.erb**
+```html
+<%= publication.description %>
+<br>
+<%= publication.like %>
+<%= publication.view %>
+<br>
+<%= link_to 'Edit', edit_publication_path(publication) %>
+<%= link_to 'Destroy', publication, method: :delete, data: { confirm: 'sure?'} %> <br>
+```
+*   Llamaremos el parcial desde index.html, esta forma es solo aplicable cuando el nombre del parcial es el singular del nombre de la vista.
+
+**index.html.erb**
+```html
+<%= render @publications %>
+```
+
+*   Ahora llamaremos al parcial en la vista show, esta sera de la forma general en como se llama un parcial, entre '' ira el nombre del parcial, seguido del nombre de la variable dentro del parcial y el valor que le pasaremos a dicha variable.
+
+**show.html.erb**
+```html
+<%= render 'publication', publication: @publication %>
+```
+
+Con eso deberia estar listo el parcial de nuestras vistas, ahora pasaremos a agregar el parcial para el formulario.
+
+*   Agregamos el parcial **form** que contendra el formulario, copiamos el contenido de la vista **edit.html.erb** en este parcial.
+
+**_form.html.erb**
+```html
+<%= form_for @publication do |f|  %>
+    <%= f.label :description %> <br>
+    <%= f.text_field :description %>
+    <br>
+    <%= f.submit %>
+<% end %>
+```
+
+*   Y ahora pasamos a llamar el parcial en la vista edit.
+
+**edit.html.erb**
+```html
+<h3>Editar</h3>
+
+<%= render 'form' %>
+```
+
+*   En el caso de la vista en new no podemos simplemente llamarlo ya que hay algo que nos falta y es la variable **@publication**, asi que no iremos al **publications_controlador.rb** y en la definicion **new** agregaremos esta variable faltante inicializandola como un contenido vacio con la estructura de nuestra tabla.
+
+**publications_controlador.rb**
+```rb
+    def new
+        @publication = Publication.new
+    end
+```
+
+*   Ahora pasamos a llamar el parcial desde la vista new.
+
+**new.html.erb**
+```html
+<h3>Publicar</h3>
+
+<%= render 'form' %>
+```
+
+*   Y ahora guardamos y corremos el servicio para verificar que todo vaya bien.

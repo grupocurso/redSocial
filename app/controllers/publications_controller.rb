@@ -18,7 +18,11 @@ class PublicationsController < ApplicationController
     end
     def index
         #@publications = Publication.all
-        @publications = Publication.where user_id: current_user.id
+        if current_user
+            @publications = Publication.where user_id: current_user.id
+        else
+            redirect_to ""
+        end
     end
     def edit
         @publication = Publication.find params[:id]
