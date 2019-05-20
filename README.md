@@ -656,5 +656,63 @@ class PublicationsController < ApplicationController
         end
     end
 end
-
 ```
+
+### Add Bootstrap
+Ahora pasaremos a agregar bootstrao a nuestro proyecto.
+
+*   Agregamos la gema de bootstrap y jquery a nuestro **Gemfile**, jquery es necesario para el uso de bootstrap.
+
+**Gemfile**
+```
+#Use bootstrap and jquery
+gem 'bootstrap', '~> 4.3.1'
+gem 'jquery-rails'
+```
+*   Ejecutamos **bundle install** para instalar estas gemas.
+
+*   Ahora necesitamos llamar a a jQuery, la librería Popper.js que se instalo cuando instalamos la gema de Bootstrap y a los archivos Javascript de Bootstrap 4.
+
+**Add a aplication.js**
+```js
+//= require jquery3
+//= require popper
+//= require bootstrap
+```
+
+*   Ahora necesitamos llamar a los archivos CSS y Javascript de Bootstrap, se incluiran en el head.
+
+**add en head, application.html.erb**
+```html
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+```
+
+*   Y solo nos queda importar Bootstrap en la hoja de estilos de la vista en donde se va a usar, como ejemplo se usara la vista de **home/index.html.erb**
+
+**Add a home.scss**
+```css
+@import "bootstrap";
+```
+
+*   Agregaremos botonos con estilos bootstrap a la vista para verificar que todo saliera bien.
+
+**home/index.html.erb**
+```html
+<% if user_signed_in? %>
+    <h1>Bienvenido</h1>
+    <b><%= current_user.email %></b>
+<% else %>
+    <h1> Necesitas registrarte o iniciar sesión</h1>
+<% end %>
+<button type="button" class="btn btn-primary">Primary</button>
+<button type="button" class="btn btn-secondary">Secondary</button>
+<button type="button" class="btn btn-success">Success</button>
+<button type="button" class="btn btn-danger">Danger</button>
+<button type="button" class="btn btn-warning">Warning</button>
+<button type="button" class="btn btn-info">Info</button>
+<button type="button" class="btn btn-light">Light</button>
+<button type="button" class="btn btn-dark">Dark</button>
+```
+
+*   Ahora solo queda correr el servidor y verificar que todo funcione.
