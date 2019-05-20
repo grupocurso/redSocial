@@ -95,7 +95,7 @@ class PublicationsController < ApplicationController
     def new
     end
     def create
-        @publication = Publication.new 
+        @publication = Publication.new
         @publication.save
     end
 end
@@ -121,7 +121,7 @@ end
 
 * ¡Listo!, probamos que la información se guarde.
 
-* Tambien se puede definir valores determinados para la información que se guardara. 
+* Tambien se puede definir valores determinados para la información que se guardara.
 
 **publications_controller.rb**
 ```rb
@@ -344,3 +344,317 @@ Con eso deberia estar listo el parcial de nuestras vistas, ahora pasaremos a agr
 ```
 
 *   Y ahora guardamos y corremos el servicio para verificar que todo vaya bien.
+
+### Divise
+Para no tener que pelearnos con la creacion de usuarios y la autentificación usaremos la gema de devise. Devise es una solución de autenticación flexible para Rails basada en Warden.
+
+*    Primero instalaremos divise, agregamos nuestra gema
+
+**Gemfile**
+```
+gem 'devise', git: 'git://github.com/plataformatec/devise.git' 
+```
+*   Ejecutar los siguientes comandos para actualizar e instalar devise
+
+**Consola**
+```
+bundle install
+rails g devise:install
+```
+
+*    Agregar en el archivo development.rb, que es una direccion para mandar email de prueba
+
+**development.rb**
+```rb
+config.action_mailer.default_url_options = { host: 'localhost', port: 3000}
+```
+*    Definir una ruta principal del proyecto, esta ruta no requerira de autorización, por ello se necesita especificar cual sera, se hace en el archivo routes.rb
+
+**routes.rb**
+```rb
+Rails.application.routes.draw do
+  devise_for :users
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root to: "home#index"
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  resources :publications
+end
+```
+
+*    Crear el controlador con la ruta que se acaba de definir como ruta principal, esto desde la consola.
+```sh
+rails g controller home index
+```
+
+*    Ahora indicaremos en nuestro layout pricipal que estaremos utilizando los mensajes flash, sera agregado en la parte del body.
+
+**Add a application.html.erb**
+```html
+<p class="notice"><%= notice %></p>
+<p class="alert"><%= alert %></p>
+```
+
+*    Ahora generaremos vistas predefinidas que continene devise, desde consola
+**Consola**
+```sh
+rails g devise:views
+```
+*    Vamos a generar un modelo, el cual devise utilizara para la autentificación.
+
+**Consola**
+```sh
+rails g devise user
+```
+
+*    (Opcional) Se te generaran varios archivos de los cuales uno es una migración y otro un modelo, en el archivo creado en el directorio db/migrate puedes agregar mas campos.
+
+Ejemplo:
+```rb
+class DeviseCreateUsers < ActiveRecord::Migration[5.2]
+  def change
+    create_table :users do |t|
+      ## Database authenticatable
+      t.string :name,              null: false, default: ""
+      t.string :email,              null: false, default: ""
+      t.string :encrypted_password, null: false, default: ""
+
+      ## Recoverable
+      t.string   :reset_password_token
+      t.datetime :reset_password_sent_at
+
+      ## Rememberable
+      t.datetime :remember_created_at
+
+      ## Trackable
+      t.integer  :sign_in_count, default: 0, null: false
+      t.datetime :current_sign_in_at
+      t.datetime :last_sign_in_at
+      t.inet     :current_sign_in_ip
+      t.inet     :last_sign_in_ip
+
+      ## Confirmable
+      # t.string   :confirmation_token
+      # t.datetime :confirmed_at
+      # t.datetime :confirmation_sent_at
+      # t.string   :unconfirmed_email # Only if using reconfirmable
+
+      ## Lockable
+      # t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
+      # t.string   :unlock_token # Only if unlock strategy is :email or :both
+      # t.datetime :locked_at
+
+
+      t.timestamps null: false
+    end
+
+    add_index :users, :email,                unique: true
+    add_index :users, :reset_password_token, unique: true
+    # add_index :users, :confirmation_token,   unique: true
+    # add_index :users, :unlock_token,         unique: true
+  end
+end
+```
+*    Una vez generado y cambiado si es que se hizo migraremos el modelo.
+
+**Consola**
+```sh
+rails db:migrate
+```
+*    En caso de haber agregado un campo ir al archivo new.html.erb de las vistas de view/devise/registration, ejemplo:
+
+**Add a new.html.erb**
+```html
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name, autofocus: true %>
+  </div>
+```
+### Navegation with devise
+
+A continuación se explicara como agregar navegación simple para manejar la sesión de usuario
+
+*    Primero agregaremos las opciones que nos dara la barra de sesion de usuario (iniciar, registrar, salir), en el archivo application.html.erb, agregamos lo siguiente en la parte del body.
+
+**Add a application.html.erb**
+```html
+    <ul class="nav justify-content-end">
+      <% if user_signed_in? %>
+        <li class="nav-item">
+          <%= link_to 'Salir', destroy_user_session_path, method: :delete %>
+        </li>
+      <% else %>
+        <li class="nav-item">
+          <%= link_to ' Iniciar', new_user_session_path %>
+        </li>
+        <li class="nav-item">
+          <%= link_to ' Registrarme', new_user_registration_path %>
+        </li>
+      <% end %>
+    </ul>
+```
+*   Para mostrar una bienvenida cuando inicias sesion, nos vamos al archivo home/
+
+**index.html.erb**
+```html
+<% if user_signed_in? %>
+    <h1>Bienvenido</h1>
+    <b><%= current_user.email %></b>
+<% else %>
+    <h1> Necesitas registrarte o iniciar sesión</h1>
+<% end %>
+```
+*   Ahora agregaremos el archivo para las traducciones de devise, creamos el archivo devise.es.yml en nuestro directorio de traducciones, y agregamos a dicho archivo lo que esta en Tradcucciones Devise
+
+### Devise params
+
+Nuestra aplicación aun no almacena la información de los campos que agregamos al modelo de nuestro usuario, ahora pasaremos a configurar esa parte para que sean guardados.
+
+*    Agregar en nuestro archivo application_controller.rb lo siguiente, ejecutara nuestra definicion solo si existe un devise_controller, y les dara permiso a los campos de nuestro usuario al agregar un nuevo registro de usuario
+
+**application_controller.rb**
+```rb
+class ApplicationController < ActionController::Base
+    before_action :configure_devise_params, if: :devise_controller?
+
+    def configure_devise_params
+        devise_parameter_sanitizer.permit(:sign_up) do |user|
+            user.permit(:name, :email, :password, :password_confirmation)
+        end
+    end
+end
+```
+*    Cambiamos el contenido de nuestro home/index.html.erb
+```html
+<% if user_signed_in? %>
+    <h1>Bienvenido <b><%= current_user.name %></b></h1>
+<% else %>
+    <h1>Por favor iniciar o registrate</h1>
+<% end %>
+```
+### One to Many Relation
+Ahora pasaremos a hacer la conexion entre el usuario y datos creados por este usuario, para poder manejar los datos por usuario.
+
+*   Vamos a agregar la referencia del usuario a la tabla
+
+**Consola**
+```sh
+rails g migration add_user_id_to_publications user:references
+rails db:migrate
+```
+
+*   Ahora especificaremos que en vez de pedir todos los datos de la tabla publications, me pida solo los que tienen id concernientes al id del usuario, para eso vamos al archivo publications_controller.rb y cambiamos el index
+
+**publications_controller.rb**
+```rb
+    def index
+        @publications = Publication.where user_id: current_user.id
+    end
+```
+
+*   Pasamos a definir la relación entre las tablas en nuestro modelo, para eso modificaremos dos archivos
+
+**user.rb**
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+  has_many :publications #Le dice que tiene una relacion a muchos datos de publications
+end
+```
+
+**publication.rb**
+```rb
+class Publication < ApplicationRecord
+    validates :description, presence: true
+    belongs_to :user
+end
+```
+
+*   Para guardar el id del usuario al momento de guardar las publicaciones hacemos las siguientes modificaciones al archivo publications_controller.rb en el metodo create
+**publications_controller.rb**
+```rb
+    def create
+        #@publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication = current_user.publications.new publication_params
+        @publication.like = 0
+        @publication.view = 0
+        if @publication.save #Se guardan los parametros enviados?
+            return redirect_to @publication
+        end
+        render 'new' # o render :new para redireccionar a new
+    end
+```
+
+### Redireccionamiento
+Ya se agregaron algunos redireccionamientos, ahora agregaremos algunos faltantes para que el usuario al tratar de acceder a ciertas URL si no tienes acceso a ellas sea redireccionado, uno es el caso de la direcciion **localhost:3000/publication** cuando no se esta logueado y trata de acceder a ella.
+
+**publication_controller.rb**
+```rb
+    def index
+        #@publications = Publication.all
+        if current_user #Esta usando cuenta de usuario - Error=false
+            @publications = Publication.where user_id: current_user.id
+        else
+            redirect_to "" #redirecciona a home
+        end
+    end
+```
+
+Checamos y vemos que funcione, pero si nos fijamos bien ya que todo lo definido en **publication_controller.rb** es solo de acceso para el usuario tendriamos que agregar esta condicion en cada una de las definiciones, para evitar este codigo repetido agregamos un **before_action**
+
+**publication_controller.rb**
+```rb
+class PublicationsController < ApplicationController
+    before_action :set_user # Accion que se ejecutara al inicio de los metodos
+    def new
+        @publication = Publication.new
+    end
+    def create
+        #@publication = Publication.new publication_params #Se almacenan los parametros enviados
+        @publication = current_user.publications.new publication_params
+        @publication.like = 0
+        @publication.view = 0
+        if @publication.save #Se guardan los parametros enviados
+            return redirect_to @publication
+        end
+        render 'new'
+    end
+    def show
+        #@publication = Publication.find params[:id] #Hace una busqueda del dato, por su id para mostrarlo
+        @publication = Publication.where({user_id: current_user.id, id: params[:id]})
+    end
+    def index
+        #@publications = Publication.all
+        @publications = Publication.where user_id: current_user.id
+    end
+    def edit
+        @publication = Publication.find params[:id]
+    end
+    def update
+        @publication = Publication.find params[:id]
+        if @publication.update publication_params
+            return redirect_to @publication
+        end
+        render 'edit'
+    end
+    def destroy
+        @publication = Publication.find params[:id]
+        @publication.destroy
+        redirect_to publications_path
+    end
+
+    private #Para definir los parametros requeridos/permitidos
+    def publication_params
+        params.require(:publication).permit :description, :like, :view
+    end
+
+    def set_user # Definicion de la accion que se quiere que se ejecute
+        if !(current_user)
+            redirect_to ""
+        end
+    end
+end
+
+```

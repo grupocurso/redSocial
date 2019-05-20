@@ -1,4 +1,5 @@
 class PublicationsController < ApplicationController
+    before_action :set_user # Accion que se ejecutara al inicio de los metodos
     def new
         @publication = Publication.new
     end
@@ -18,11 +19,7 @@ class PublicationsController < ApplicationController
     end
     def index
         #@publications = Publication.all
-        if current_user
-            @publications = Publication.where user_id: current_user.id
-        else
-            redirect_to ""
-        end
+        @publications = Publication.where user_id: current_user.id
     end
     def edit
         @publication = Publication.find params[:id]
@@ -33,7 +30,6 @@ class PublicationsController < ApplicationController
             return redirect_to @publication
         end
         render 'edit'
-
     end
     def destroy
         @publication = Publication.find params[:id]
@@ -44,5 +40,11 @@ class PublicationsController < ApplicationController
     private #Para definir los parametros requeridos/permitidos
     def publication_params
         params.require(:publication).permit :description, :like, :view
+    end
+
+    def set_user # Definicion de la accion que se quiere que se ejecute
+        if !(current_user)
+            redirect_to ""
+        end
     end
 end
