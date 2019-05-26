@@ -733,6 +733,7 @@ rails g controller DataUsers
 ```
 
 *   Agregamos a la ruta.
+
 **routes.rb**
 ```rb
 Rails.application.routes.draw do
@@ -745,6 +746,7 @@ end
 ```
 
 *   Definimos index en el controlador y creamos la vista index para probar.
+
 **data_users_controller.rb**
 ```rb
 class DataUsersController < ApplicationController
@@ -756,4 +758,32 @@ end
 **data_users/index.html.erb**
 ```html
 Hola soy Data Users
+```
+
+### Data in Data User
+Necesitamos agregar lo necesario para el CRUD o mantenimiento de la informacion de nuestro **data user**
+
+*   Agregamos la vista new, tambien creamos el parcial que contendra la estructura de nuestro formulario para manejar el CRUD de nuestro **data user**.
+
+**data_users/new.html.erb**
+```html
+<h3>Datos de usuario</h3>
+
+<%= render 'form' %>
+```
+**data_users/_form.html.erb**
+```html
+<%= form_for @data_user do |f|  %>
+    <%= f.label :nick %> <br>
+    <%= f.text_field :nick %><br>
+    <%= f.label :information %> <br>
+    <%= f.text_field :information %><br>
+    <%= f.submit %>
+<% end %>
+```
+**Add a data_users_controller.rb**
+```rb
+    def new
+        @data_user = DataUser.new 
+    end
 ```
