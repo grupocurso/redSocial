@@ -760,7 +760,7 @@ end
 Hola soy Data Users
 ```
 
-### Data in Data User
+### New view
 Necesitamos agregar lo necesario para el CRUD o mantenimiento de la informacion de nuestro **data user**
 
 *   Agregamos la vista new, tambien creamos el parcial que contendra la estructura de nuestro formulario para manejar el CRUD de nuestro **data user**.
