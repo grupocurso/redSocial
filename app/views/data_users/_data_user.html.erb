@@ -1,0 +1,8 @@
+<% data_users.each do |data| %>
+    <%= data.nick %>
+    <br>
+    <%= data.information %>
+    <br>
+    <%= link_to 'Edit', edit_data_user_path(data) %>
+    <%= link_to 'Destroy', data, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% end %>

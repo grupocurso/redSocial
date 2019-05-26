@@ -37,8 +37,8 @@ class PublicationsController < ApplicationController
         redirect_to publications_path
     end
 
-    private #Para definir los parametros requeridos/permitidos
-    def publication_params
+    private 
+    def publication_params #Para definir los parametros requeridos/permitidos
         params.require(:publication).permit :description, :like, :view
     end
 

@@ -763,7 +763,7 @@ Hola soy Data Users
 ### New view
 Necesitamos agregar lo necesario para el CRUD o mantenimiento de la informacion de nuestro **data user**
 
-*   Agregamos la vista new, tambien creamos el parcial que contendra la estructura de nuestro formulario para manejar el CRUD de nuestro **data user**.
+Agregamos la vista new, tambien creamos el parcial que contendra la estructura de nuestro formulario para manejar el CRUD de nuestro **data user**.
 
 **data_users/new.html.erb**
 ```html
@@ -786,4 +786,118 @@ Necesitamos agregar lo necesario para el CRUD o mantenimiento de la informacion 
     def new
         @data_user = DataUser.new 
     end
+```
+### Relation and CRUD
+Bien tenemos la estrucutra basica, pero hay un problema y esque esta información no esta ligada a una cuenta de usuario, necesitamos ligar la información a la cuenta del usuario.
+
+*   Agregamos la migración para la referencia.
+
+**Consola**
+```
+rails g migration add_user_id_to_data_users user:references
+rails db:migrate
+```
+
+*   Agregamos las relaciones a los archivos rb
+
+**user.rb**
+```rb
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+  has_many :publications #Le dice que tiene una relacion a muchos datos de publications
+  has_many :data_users
+end
+```
+**data_user.rb**
+```rb
+class DataUser < ApplicationRecord
+    belongs_to :user
+end
+```
+
+*   Agregamos y/o modificamos todas las vistas necesarias, de momento despues se haran las modificaciones pertinentes.
+
+**data_users/edit.html.erb**
+```html
+<h3>Modificar dato de usuario</h3>
+
+<%= render 'form' %>
+```
+
+**data_users/_data_user.html.erb**
+```html
+<% data_users.each do |data| %>
+    <%= data.nick %>
+    <br>
+    <%= data.information %>
+    <br>
+    <%= link_to 'Edit', edit_data_user_path(data) %>
+    <%= link_to 'Destroy', data, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% end %>
+```
+
+**data_users/show.html.erb**
+```html
+<%= render 'data_user', data_users: @data_user %>
+```
+
+**data_users/index.html.erb**
+```html
+<%= render 'data_user', data_users: @data_users %>
+```
+
+*   Ahora falta agregar todo el manejo que se necesitara para la información y los redireccionamientos.
+
+**data_users_controller.rb**
+```rb
+class DataUsersController < ApplicationController
+    before_action :set_user
+    def index
+        @data_users = DataUser.where user_id: current_user.id
+    end
+    def new
+        @data_user = DataUser.new 
+    end
+    def create
+        @data_user = current_user.data_users.new data_user_params
+        if @data_user.save
+            return render 'index'
+        end
+        render 'new'
+    end
+
+    def show
+        @data_user = DataUser.where({user_id: current_user.id, id: params[:id]})
+    end
+    def edit
+        @data_user = DataUser.find params[:id]
+    end
+    def update
+        @data_user = DataUser.find params[:id]
+        if @data_user.update data_user_params
+            return redirect_to @data_user
+        end
+        render 'edit'
+    end
+    def destroy
+        @data_user = DataUser.find params[:id]
+        @data_user.destroy
+        redirect_to data_users_path
+    end
+
+    private
+    def data_user_params
+        params.require(:data_user).permit :nick, :information
+    end
+
+    def set_user
+        if !(current_user)
+            redirect_to ""
+        end
+    end
+end
+
 ```
