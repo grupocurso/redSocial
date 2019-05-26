@@ -716,3 +716,44 @@ gem 'jquery-rails'
 ```
 
 *   Ahora solo queda correr el servidor y verificar que todo funcione.
+
+## Data User
+### Generate data user
+Necesitamos una tabla para contener toda la información del usuario, ahora tenemos una cuenta de usuario, pero dicha cuenta solo tiene información basica, crearemos una tabla para información mas especifica del usuario.
+
+*   Generamos el modelo para esta tabla y la migramos.
+```
+rails g model data_user nick information
+rails db:migrate
+```
+
+*   Ahora generamos el controlador.
+```
+rails g controller DataUsers
+```
+
+*   Agregamos a la ruta.
+**routes.rb**
+```rb
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  devise_for :users
+  get '', to: 'home#index' 
+  resources :publications
+  resources :data_users
+end
+```
+
+*   Definimos index en el controlador y creamos la vista index para probar.
+**data_users_controller.rb**
+```rb
+class DataUsersController < ApplicationController
+    def index
+
+    end
+end
+```
+**data_users/index.html.erb**
+```html
+Hola soy Data Users
+```
