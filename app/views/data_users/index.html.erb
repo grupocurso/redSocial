@@ -1,1 +1,14 @@
 <%= render 'data_user', data_users: @data_users %>
+<% 
+=begin %> 
+<% @data_users.each do |data| %>
+    <% if (data.nick == 'prueba01')%>
+        Hola es la prueba 01
+        </br>
+    <% else %>
+        Lo siento no soy la prueba 01
+        </br>
+    <% end %>
+<% end %>
+<% 
+=end %>
