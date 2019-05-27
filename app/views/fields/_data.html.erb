@@ -1,0 +1,10 @@
+<% fields.each do |field| %>
+    <%= field.token %>
+    <br>
+    <%= field.description %>
+    <br>
+    <%= field.lenguage %>
+    <br>
+    <%= link_to 'Edit', edit_field_path(field) %>
+    <%= link_to 'Destroy', field, method: :delete, field: { confirm: 'sure?'} %> <br>
+<% end %>
