@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   get '', to: 'home#index' 
   resources :publications
   resources :data_users
+  resources :fields
 end
