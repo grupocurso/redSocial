@@ -31,6 +31,14 @@ class FieldsController < ApplicationController
         @field.destroy
         redirect_to fields_path
     end
+    def idiom
+        #@fields = Field.all
+        if !Field.where(lenguage: params[:idi]).empty?
+            @fields = Field.where({user_id: current_user.id, lenguage: params[:idi]})
+            return render 'index' 
+        end
+        redirect_to ""
+    end
 
     private 
     def field_params 

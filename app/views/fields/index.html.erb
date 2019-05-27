@@ -1,1 +1,15 @@
+<% 
+=begin %>
 <%= render 'data', fields: @fields %>
+<%
+=end %>
+<div class="container">
+    <% @fields.each do |field| %>
+      <% if field.token == 'pagname' %>
+        <h3><%= field.description %> </h3>  
+      <% end %>
+      <% if field.token == 'pagdesc' %>
+        <b><%= field.description %> </b>
+      <% end %>
+    <% end %>    
+</div>
