@@ -5,10 +5,13 @@ class FieldsController < ApplicationController
     end
     def create
         @field = current_user.fields.new field_params
-        if @field.save
-            return redirect_to @field
+        if Field.where({token: @field.token, lenguage: @field.lenguage}).empty?
+            if @field.save
+                return redirect_to @field
+            end
         end
-        render 'new'
+        redirect_to(action: 'new')
+        
     end
     def show
         @field = Field.where({user_id: current_user.id, id: params[:id]})
