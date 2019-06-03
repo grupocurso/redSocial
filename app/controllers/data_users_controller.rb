@@ -1,7 +1,7 @@
 class DataUsersController < ApplicationController
     before_action :set_user
     def index
-        @data_users = DataUser.where user_id: current_user.id
+        @data_users = DataUser.where(user_id: current_user.id)
     end
     def new
         @data_user = DataUser.new 
@@ -9,7 +9,7 @@ class DataUsersController < ApplicationController
     def create
         @data_user = current_user.data_users.new data_user_params
         if @data_user.save
-            return render 'index'
+            return redirect_to(action: 'index')
         end
         render 'new'
     end
@@ -35,7 +35,7 @@ class DataUsersController < ApplicationController
 
     private
     def data_user_params
-        params.require(:data_user).permit :nick, :information
+        params.require(:data_user).permit :nick, :information, :picture
     end
 
     def set_user

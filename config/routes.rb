@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   devise_for :users
   get '', to: 'home#index'
   get 'idiom', to: 'fields#idiom'
+  get 'devise/fields', to: 'fields#idiom'
   resources :publications
   resources :data_users
   resources :fields

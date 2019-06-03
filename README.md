@@ -901,3 +901,149 @@ class DataUsersController < ApplicationController
 end
 
 ```
+
+## Update image
+Para poder subir imagenes usaremos **carrierwave**, tambien puede usarse **paperclip** pero se usara **carrierwave** en este proyecto.
+
+*   Necesitamos agregar la gema **carrierwave** para la relación imagen-modelo y aparte agregaremos la gema **mini_magick** para poder procesar la imagen.
+
+**Gemfile**
+```rb
+# Para la relacion archivo (imagen) y modelo
+gem 'carrierwave'
+# Ayuda con lo procesamientos en las imagenes
+gem 'mini_magick'
+```
+
+*   Actualizamos las gemas
+```
+bundle install
+```
+
+*   Generamos un archivo para la configuración.
+```
+rails g uploader Picture
+```
+
+*   Agregamos las configuraciones que necesitaremos.
+
+**picture_uploader.rb**
+```rb
+class PictureUploader < CarrierWave::Uploader::Base
+  # Include RMagick or MiniMagick support:
+  # include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
+
+  # Choose what kind of storage to use for this uploader:
+  storage :file
+  # storage :fog
+
+  # Override the directory where uploaded files will be stored.
+  # This is a sensible default for uploaders that are meant to be mounted:
+  def store_dir
+    "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+  end
+
+  # Provide a default URL as a default if there hasn't been a file uploaded:
+  def default_url(*args)
+  #   # For Rails 3.1+ asset pipeline compatibility:
+    ActionController::Base.helpers.asset_path("default.png")
+  #
+  #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
+  end
+
+  # Process files as they are uploaded:
+  # process scale: [200, 300]
+  #
+  # def scale(width, height)
+  #   # do something
+  # end
+
+  # Create different versions of your uploaded files:
+  version :thumb do
+    process resize_to_fill: [50, 50]
+  end
+  version :medium do
+    process resize_to_fill: [850, 850]
+  end
+
+  # Add a white list of extensions which are allowed to be uploaded.
+  # For images you might use something like this:
+  def extension_whitelist
+    %w(jpg jpeg gif png)
+  end
+
+  # Override the filename of the uploaded files:
+  # Avoid using model.id or version_name here, see uploader/store.rb for details.
+  # def filename
+  #   "something.jpg" if original_filename
+  # end
+end
+```
+
+*   Ahora necesitamos agregar la relación entre nuestro modelo y esta configuración.
+
+**data_user.rb**
+```rb
+class DataUser < ApplicationRecord
+    belongs_to :user
+    mount_uploader :picture, PictureUploader
+end
+```
+
+*   Agregamos la imagen por default en **./app/assets/images**.
+
+*   Nos falta agregar el campo **picture** que es con el que se relaciona **PictureUploader**, asi hacemos una migracion para agregarlo.
+
+```sh
+rails g migration add_picture_to_data_users
+```
+
+*   El archivo creade deberia ser similar a lo siguiente, de no ser asi agregue lo necesario.
+```rb
+class AddPictureToDataUsers < ActiveRecord::Migration[5.2]
+  def change
+    add_column :data_users, :picture, :string
+  end
+end
+```
+
+*   Agregamos en la vista la muestra de la imagen.
+
+**data_users/_data_user.html.erb**
+```html
+<% data_users.each do |data| %>
+    <%= image_tag data.picture.thumb.url, class: 'figure-img img-fluid rounded' %>
+    <br>
+    <%= data.nick %>
+    <br>
+    <%= data.information %>
+    <br>
+    <%= link_to 'Edit', edit_data_user_path(data) %>
+    <%= link_to 'Destroy', data, method: :delete, data: { confirm: 'sure?'} %> <br>
+<% end %>
+```
+
+*   Agregar la opción para agregar una imagen en el formulario.
+
+**data_users/_form.html.erb**
+```html
+<%= form_for @data_user do |f|  %>
+    <%= f.label :nick %> <br>
+    <%= f.text_field :nick %><br>
+    <%= f.label :information %> <br>
+    <%= f.text_field :information %><br>
+    <%= f.label :picture %> <br>
+    <%= f.file_field :picture %><br>
+    <%= f.submit %>
+<% end %>
+```
+
+*   Agregar el permiso para el dato de picture
+
+**Add a data_users_controller.rb**
+```rb
+    def data_user_params
+        params.require(:data_user).permit :nick, :information, :picture
+    end
+```

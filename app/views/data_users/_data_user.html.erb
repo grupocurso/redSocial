@@ -1,4 +1,6 @@
 <% data_users.each do |data| %>
+    <%= image_tag data.picture.thumb.url, class: 'figure-img img-fluid rounded' %>
+    <br>
     <%= data.nick %>
     <br>
     <%= data.information %>

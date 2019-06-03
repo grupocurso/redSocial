@@ -13,8 +13,8 @@
   </head>
 
   <body>
-    <%= link_to "Español", controller: "fields", action: "idiom", idi: 'esp' %>
-    <%= link_to "Ingles", controller: "fields", action: "idiom", idi: 'eng' %>
+    <%= link_to "Español", controller: "/fields", action: "idiom", idi: 'esp' %>
+    <%= link_to "Ingles", controller: "/fields", action: "idiom", idi: 'eng' %>
     <ul class="nav justify-content-end">
       <% if user_signed_in? %>
         <li class="nav-item">
