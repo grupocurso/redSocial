@@ -1047,3 +1047,55 @@ end
         params.require(:data_user).permit :nick, :information, :picture
     end
 ```
+
+## Upload project in Heroku
+Ahora pasaremos a subir nuestro proyecto a heroku.
+
+*   Primero necesitamos instalar heroku ```sudo snap install --classic heroku```.
+*   Verificamos que este instalado con ```heroku --version```.
+
+*   Nos registramos en [heroku](https://www.heroku.com/).
+
+*   Agregamos una gema que necesitaremos para que heroku maneje los estaticos (archivos).
+
+**Add to Gemfile**
+```rb
+group :production do
+  gem "rails_12factor"
+end
+```
+
+*   Installar las gemas pero de produccion ```bundle install --without production```.
+
+*   Actualizar los cambios
+*   Precompilar los archivos estaticos ```rake assets:precompile ```.
+
+*   En caso de error con yart instalarlo
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+sudo apt-get update && sudo apt-get install yarn
+```
+*   Actualizar cambios
+
+*   Iniciar sesión en heroku
+
+*   Creamos un subdominio para el proyecto ```heroku create```.
+
+*   Ahora subimos el proyecto a heroku ```git push heroku master``` o ```git push heroku RAMA:master```.
+
+*   Ahora migramos la base de datos del proyecto ```heroku run rake db:migrate```.
+*   Si tenemos datos en nuestra DB del proyecto los podemos pasar con ```heroku run rake db:seed```.
+
+*  Ahora abrimos el enlace de nuestro proyecto ```heroku open```
+
+**Información adicional**
+------------------------------------------
+*   Cambiar el nombre del subdominio ```heroku rename newname```.
+
+*   Quitar la conexion al repositorio de heroku usar ```git remote rm heroku```.
+
+*   Dropear la base de datos de heroku ```heroku pg:reset DATABASE```.   
+
