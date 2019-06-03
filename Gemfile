@@ -11,6 +11,9 @@ gem 'carrierwave'
 gem 'mini_magick'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
+group :production do
+  gem "rails_12factor"
+end
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # devise gem
